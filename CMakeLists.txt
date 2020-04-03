@@ -21,7 +21,7 @@ include(FetchContent)
 FetchContent_Declare(
   iota_common
   GIT_REPOSITORY https://github.com/MatthewDarnell/iota_common.git
-  GIT_TAG 9026575c3f77b6e74f1cf20f4555b1a4f39b3d53
+  GIT_TAG c6b152317f352eecdb35db0376db7196c533e7b0
 )
 
 if(${CMAKE_VERSION} VERSION_LESS 3.14)
