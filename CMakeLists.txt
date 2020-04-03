@@ -20,8 +20,8 @@ option(CCLIENT_TEST "Enable CClient library test cases" OFF)
 include(FetchContent)
 FetchContent_Declare(
   iota_common
-  GIT_REPOSITORY http://github.com/iotaledger/iota_common.git
-  GIT_TAG 8cb88f3ff3188acc45457c80d47a369127ff9aaf
+  GIT_REPOSITORY https://github.com/MatthewDarnell/iota_common.git
+  GIT_TAG 5dc191ec5df0af583697ed237b4f0ad642aa6ba1
 )
 
 if(${CMAKE_VERSION} VERSION_LESS 3.14)
