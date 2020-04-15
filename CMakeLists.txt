@@ -20,7 +20,7 @@ option(CCLIENT_EXAMPLE "Enable CClient examples" OFF)
 option(CCLIENT_LOGGER "Enable CClient logger" ON)
 
 if(CCLIENT_LOGGER)
-  add_definitions(-DLOGGER_ENABLE)
+    add_definitions(-DLOGGER_ENABLE)
 endif()
 
 # fetch iota_common
@@ -28,7 +28,7 @@ include(FetchContent)
 FetchContent_Declare(
   iota_common
   GIT_REPOSITORY https://github.com/MatthewDarnell/iota_common.git
-  GIT_TAG b2330b6acf86f09c73c4322958bf73ef1d63913d
+  GIT_TAG 6c01fd44da908c6e139c96b8bfc35e585a6d291d
 )
 
 if(${CMAKE_VERSION} VERSION_LESS 3.14)
