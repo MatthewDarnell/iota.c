@@ -14,7 +14,14 @@ project(iota_client DESCRIPTION "IOTA Client Library")
 enable_language(C)
 enable_testing()
 
+option(YOCTO "Enable Building in Yocto" OFF)
 option(CCLIENT_TEST "Enable CClient library test cases" OFF)
+option(CCLIENT_EXAMPLE "Enable CClient examples" OFF)
+option(CCLIENT_LOGGER "Enable CClient logger" ON)
+
+if(CCLIENT_LOGGER)
+  add_definitions(-DLOGGER_ENABLE)
+endif()
 
 # fetch iota_common
 include(FetchContent)
@@ -33,6 +40,8 @@ if(${CMAKE_VERSION} VERSION_LESS 3.14)
         endif()
     endmacro()
 endif()
+
+
 
 message(STATUS "Fetching iota_common")
 FetchContent_MakeAvailable(iota_common)
@@ -60,7 +69,6 @@ set(API_CORE_SRC
   ${API_CORE_DIR}/get_neighbors.c
   ${API_CORE_DIR}/get_node_api_conf.c
   ${API_CORE_DIR}/get_node_info.c
-  ${API_CORE_DIR}/get_tips.c
   ${API_CORE_DIR}/get_transactions_to_approve.c
   ${API_CORE_DIR}/get_trytes.c
   ${API_CORE_DIR}/logger.c
@@ -123,7 +131,6 @@ set(RES_SRC
   ${RES_DIR}/get_missing_transactions.c
   ${RES_DIR}/get_neighbors.c
   ${RES_DIR}/get_node_info.c
-  ${RES_DIR}/get_tips.c
   ${RES_DIR}/get_transactions_to_approve.c
   ${RES_DIR}/get_trytes.c
   ${RES_DIR}/remove_neighbors.c
@@ -144,7 +151,6 @@ set(JSON_SERIALIZER_SRC
   ${JSON_SERIALIZER_DIR}/get_neighbors.c
   ${JSON_SERIALIZER_DIR}/get_node_api_conf.c
   ${JSON_SERIALIZER_DIR}/get_node_info.c
-  ${JSON_SERIALIZER_DIR}/get_tips.c
   ${JSON_SERIALIZER_DIR}/get_transactions_to_approve.c
   ${JSON_SERIALIZER_DIR}/get_trytes.c
   ${JSON_SERIALIZER_DIR}/helpers.c
@@ -168,11 +174,13 @@ add_library(cclient
   ${JSON_SERIALIZER_SRC}
 )
 
-add_dependencies(cclient
-  "ext_cjson"
-  "ext_http_parser"
-  "ext_mbedtls"
-  )
+if(NOT YOCTO)
+  add_dependencies(cclient
+    "ext_cjson"
+    "ext_http_parser"
+    "ext_mbedtls"
+    )
+endif()
 
 target_include_directories(cclient PUBLIC 
   "${PROJECT_SOURCE_DIR}"
@@ -196,7 +204,7 @@ target_link_libraries(cclient PUBLIC
 install(TARGETS cclient DESTINATION "${CMAKE_INSTALL_PREFIX}/lib")
 install(DIRECTORY "${PROJECT_SOURCE_DIR}/cclient/" DESTINATION "${CMAKE_INSTALL_PREFIX}/include/cclient" FILES_MATCHING PATTERN "*.h")
 
-if(${CCLIENT_TEST})
+if(CCLIENT_TEST)
   # ==============API test cases================
   function(add_cclient_test test_src test_name)
     add_executable(${test_name} "cclient/api/tests/${test_src}" "cclient/api/tests/cclient_service_init.c")
@@ -222,7 +230,6 @@ if(${CCLIENT_TEST})
   add_cclient_test("test_get_neighbors.c" "test_get_neighbors")
   add_cclient_test("test_get_node_api_conf.c" "test_get_node_api_conf")
   add_cclient_test("test_get_node_info.c" "test_get_node_info")
-  add_cclient_test("test_get_tips.c" "test_get_tips")
   add_cclient_test("test_get_transactions_to_approve.c" "test_get_transactions_to_approve")
   add_cclient_test("test_get_trytes.c" "test_get_trytes")
   add_cclient_test("test_remove_neighbors.c" "test_remove_neighbors")
@@ -230,3 +237,48 @@ if(${CCLIENT_TEST})
   add_cclient_test("test_were_addresses_spent_from.c" "test_were_addresses_spent_from")
   # ==============API test cases================
 endif()
+
+if(CCLIENT_EXAMPLE)
+  set(EXAMPLE_DIR "cclient/api/examples")
+  set(EXAMPLE_SRC
+    ${EXAMPLE_DIR}/cclient_examples.c
+    ${EXAMPLE_DIR}/example_attach_to_tangle.c
+    ${EXAMPLE_DIR}/example_broadcast_bundle.c
+    ${EXAMPLE_DIR}/example_broadcast_transactions.c
+    ${EXAMPLE_DIR}/example_check_consistency.c
+    ${EXAMPLE_DIR}/example_find_transaction_objects.c
+    ${EXAMPLE_DIR}/example_find_transactions.c
+    ${EXAMPLE_DIR}/example_get_account_data.c
+    ${EXAMPLE_DIR}/example_get_balance.c
+    ${EXAMPLE_DIR}/example_get_bundle.c
+    ${EXAMPLE_DIR}/example_get_inclusion_states.c
+    ${EXAMPLE_DIR}/example_get_inputs.c
+    ${EXAMPLE_DIR}/example_get_latest_inclusion.c
+    ${EXAMPLE_DIR}/example_get_new_address.c
+    ${EXAMPLE_DIR}/example_get_transactions_to_approve.c
+    ${EXAMPLE_DIR}/example_get_trytes.c
+    ${EXAMPLE_DIR}/example_get_unspent_address.c
+    ${EXAMPLE_DIR}/example_is_promotable.c
+    ${EXAMPLE_DIR}/example_node_api_conf.c
+    ${EXAMPLE_DIR}/example_node_info.c
+    ${EXAMPLE_DIR}/example_prepare_transfer.c
+    ${EXAMPLE_DIR}/example_promote_transaction.c
+    ${EXAMPLE_DIR}/example_replay_bundle.c
+    ${EXAMPLE_DIR}/example_send_balance.c
+    ${EXAMPLE_DIR}/example_send_data.c
+    ${EXAMPLE_DIR}/example_send_trytes.c
+    ${EXAMPLE_DIR}/example_store_transactions.c
+    ${EXAMPLE_DIR}/example_traverse_bundle.c
+    ${EXAMPLE_DIR}/example_were_addresses_spent_from.c
+  )
+  add_executable(client_example ${EXAMPLE_SRC})
+
+  target_include_directories(client_example PRIVATE
+    "${PROJECT_SOURCE_DIR}"
+    "${CMAKE_INSTALL_PREFIX}/include")
+  add_dependencies(client_example cclient)
+  target_link_libraries(client_example PRIVATE
+    cclient
+    ${IOTA_COMMON_LIBS}
+  )
+endif(CCLIENT_EXAMPLE)

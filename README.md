@@ -218,7 +218,6 @@ The IOTA C client library consists of two sets of API:
 * iota_client_get_neighbors()
 * iota_client_get_node_api_conf()
 * iota_client_get_node_info()
-* iota_client_get_tips()
 * iota_client_get_transactions_to_approve()
 * iota_client_get_trytes()
 * iota_client_remove_neighbors()
@@ -250,8 +249,9 @@ You can find example templates in this [GitHub repository](https://github.com/oo
 
 ## Supporting the project
 
-If the IOTA C client library has been useful to you and you feel like contributing, consider posting a [bug report](https://github.com/iotaledger/iota.c/issues/new-issue), feature request or a [pull request](https://github.com/iotaledger/iota.c/pulls/).  
-We have some [basic contribution guidelines](CONTRIBUTING.md) to keep our code base stable and consistent.
+If the IOTA C client library has been useful to you and you feel like contributing, consider posting a [bug report](https://github.com/iotaledger/iota.c/issues/new-issue), feature request or a [pull request](https://github.com/iotaledger/iota.c/pulls/). 
+ 
+We have some [basic contribution guidelines](.github/CONTRIBUTING.md) to keep our code base stable and consistent.
 
 ### Running test cases
 
